@@ -1,136 +1,205 @@
-# CLAUDE.md
+# Foody V2 — Claude Code Instructions
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project context
+Portfolio-grade restaurant ordering app. Backend is fixed and deployed; this repo is frontend-only. Goal: production-quality reference implementation showcasing senior-level Next.js + TypeScript work.
 
-## Commands
+Read `./SPEC.md` first — it defines scope, stack, and success criteria. Everything you do must serve those criteria.
 
-```bash
-npm run dev       # Start development server
-npm run build     # Production build
-npm run start     # Serve production build
-npm run lint      # Run ESLint
-```
+## Sources of truth
+- **Project spec**: `./SPEC.md` — what we're building and what done means
+- **API contract**: `./api/swagger.json` — backend reality. If a field isn't here, double-check with a real API call before assuming it doesn't exist.
+- **Design**: `./design/*.png` — UI reality. Pixel-faithful match required.
+- **Progress**: `./PROGRESS.md` — where we are right now
+- **API base URL**: https://be-restaurant-production.up.railway.app
+- **Swagger UI** (human reference only, never for code): https://be-restaurant-production.up.railway.app/api-swagger/
 
-No test suite is configured.
+---
 
-## Environment
+## Phase 0 — Discovery (do this ONCE before any code)
 
-Copy `.env.local` and set:
+### Step 0.1 — Read SPEC.md
+Internalize scope, stack, and success criteria. Every later decision must trace back to a goal in `SPEC.md`.
 
-```
-NEXT_PUBLIC_API_BASE_URL=https://be-restaurant-production.up.railway.app
-```
+### Step 0.2 — Inspect every Figma design
+Read every file in `./design/`. For each, output:
+- Page name and route
+- All UI elements (lists, cards, forms, modals, buttons, inputs)
+- All visible states (loading, empty, error, success, hover, focus, disabled)
+- Shared components used across pages
+- Mobile vs desktop differences (note breakpoints)
+- Client-only interactions (filters, modals, selections, scroll behavior)
 
-Defaults to `http://localhost:8000` if unset. Backend Swagger at `/apiswagger/`.
+### Step 0.3 — Audit the entire Swagger
+Read `./api/swagger.json` end-to-end. For each page from 0.2:
+- Map page → relevant endpoints
+- Note auth requirements per endpoint
+- Flag field naming inconsistencies (e.g. `food_name` vs `foodName`)
+- Flag UI needs with no matching API (gaps)
+- Flag API responses with unclear semantics
+- Where a response shape feels suspect, verify with a real call to https://be-restaurant-production.up.railway.app/api/* — reality wins over spec
 
-Figma design: `https://www.figma.com/design/1By7DB1gDCNEoW62UqLUrA/Restaurant-App?node-id=2210-441096`
+### Step 0.4 — Propose architecture
+Output a written proposal covering:
+- **Folder structure** — only folders this project actually needs
+- **Shared components** — anything appearing on ≥2 pages, extract upfront
+- **Mappers needed** — every API → view model conversion required
+- **Build order** — which page first, with rationale (usually: lowest-coupling page first)
+- **Tooling decisions** — Node version, package manager (pnpm), key library versions
+- **Open questions** — anything ambiguous in design or API that blocks progress
+- **ADR candidates** — decisions worth documenting in `docs/decisions/`
 
-## Key Files (read these first)
+### Step 0.5 — STOP and confirm with user
+Do not write a single source file before user approval.
 
-- `app/page.tsx` — entry point
-- `store/index.ts` — state management
-- `constants/api.ts` — all API endpoints
-- `constants/routes.ts` — all route constants
-- `SPEC.md` — current feature being built
-- `PROGRESS.md` — current status and next steps
+Output the discovery as a clean summary. Wait for "approved" / "go ahead" / specific corrections. Iterate until approved.
 
-## Session Rules
+Only after explicit approval, proceed to Phase 1 of the first page.
 
-### Starting a new feature
-When user says "start feature":
-1. Read CLAUDE.md, PROGRESS.md, and SPEC.md
-2. Summarize understanding before touching any files
+---
 
-### Continuing work
-When user says "continue":
-1. Read CLAUDE.md and PROGRESS.md only
-2. Resume from the exact next step in PROGRESS.md
+## The 9-phase per-page workflow (after Phase 0 approved)
 
-### Ending a session
-When user says "we're done":
-1. Update PROGRESS.md with what was completed and exact next step
-2. Confirm the update is done
-3. Remind user to run /clear
+### Phase 1 — Figma re-inspect
+Re-read the specific design for the page. Confirm details from Phase 0 — designs reveal nuance on closer look.
 
-## Architecture
+### Phase 2 — Swagger re-audit + real-call verify
+Re-read relevant endpoints. Verify field names, types, nullability. Where uncertain, hit the real API to confirm response shape. Ask user if anything still unclear.
 
-**Next.js 16 App Router** with a features-first layout.
+### Phase 3 — TypeScript types
+Write types matching actual API response shape exactly (real call, not spec). Place in `src/types/api.ts`.
 
-### Routing
+### Phase 4 — View model + mapper (if needed)
+If API shape ≠ what UI consumes, create:
+- View model in `src/types/models.ts`
+- Mapper in `src/lib/mappers/`
+- Unit test for mapper in same folder
+Skip if shapes already align.
 
-| Path | Description |
-|------|-------------|
-| `app/page.tsx` | Home — hero + restaurant list |
-| `app/(auth)/login`, `app/(auth)/register` | Auth route group, no navbar |
-| `app/restaurants/page.tsx` | Restaurant listing with filters |
-| `app/restaurants/[id]/page.tsx` | Restaurant detail + menu |
-| `app/cart/page.tsx` | Cart (protected) |
-| `app/checkout/page.tsx` | Checkout (protected) |
-| `app/profile/page.tsx` | Profile + orders + address (protected) |
+### Phase 5 — Static UI
+Build components with hardcoded data matching view model type. No fetching. Implement all states (loading skeleton, error, empty) using static toggles. Pixel-fidelity to Figma established here.
 
-Protected routes redirect to `/login` on 401. Route constants live in `constants/routes.ts`.
+### Phase 6 — Server state (TanStack Query)
+Replace hardcoded data with `useQuery` / `useMutation` hooks in `src/hooks/api/`. Each hook fetches and runs mapper. UI consumes view model only.
 
-### State Management
+### Phase 7 — Client state (Zustand / useState)
+Add interaction state last: modals, filters, selections, form drafts. If state lives on server, keep in query — never duplicate.
 
-Two layers, kept strictly separate:
+### Phase 8 — Tests
+Add unit tests (mappers, utils), component tests (forms), E2E if this page is in a critical user path. See `SPEC.md` testing requirements.
 
-- **Redux Toolkit** — `store/index.ts`
-  - `auth` (`features/auth/authSlice.ts`) — user, token, isAuthenticated; async thunks call `authService`
-  - `cart` (`features/cart/store.ts`) — items, totals, restaurantId; enforces single-restaurant constraint
-- **TanStack Query** — server state inside `features/*/hooks/`
+### Phase 9 — Polish
+Accessibility audit (keyboard, screen reader, focus, contrast). Lighthouse run. Fix anything below thresholds in `SPEC.md`.
 
-Typed dispatch/selector hooks in `store/hooks.ts`. Redux store provided at root via `<ReduxProvider>` (`store/provider.tsx`).
+---
 
-**Critical**: `QueryClientProvider` is not yet in `app/layout.tsx`. React Query cannot function until it wraps `{children}` inside `ReduxProvider`.
+## Hard rules
 
-### API Layer
+- **Phase 0 must complete and be approved before any code is written**
+- One page fully done (all 9 phases) before starting another
+- Never invent API field names — verify in `swagger.json` AND with a real call when in doubt
+- Never use placeholder data outside Phase 5
+- Never hit the API in Phase 5 — that's Phase 6's job
+- Never mix server state and client state in the same store
+- If Swagger response ≠ what UI needs, write a mapper — never reshape UI to fit ugly API
+- No `any` ever. If type is genuinely unknown, ask the user.
+- No commented-out code in commits
+- No console.logs in committed code (use proper logger if needed)
+- Ask the user when uncertain. Never assume. Never improvise.
 
-`lib/apiClient.ts` — Axios instance with two interceptors:
-1. **Request**: reads JWT from `localStorage`, injects `Authorization: Bearer <token>`
-2. **Response**: on 401, clears token and redirects to `/login` on protected routes only
+## Conventions
 
-All endpoint paths in `constants/api.ts` (`API_ENDPOINTS`). `restaurantService` currently only implements `getRecommended()` — list, search, detail, best-seller, and nearby methods are missing.
+### Where things live (create folders as needed)
+- API response types → `src/types/api.ts`
+- View model types → `src/types/models.ts`
+- API → view model mappers → `src/lib/mappers/`
+- API client (axios + interceptors) → `src/lib/api-client.ts`
+- TanStack Query hooks → `src/hooks/api/`
+- Zustand stores (client state only) → `src/stores/`
+- shadcn primitives → `src/components/ui/`
+- Feature components → `src/components/[feature]/`
+- Page routes → `src/app/[route]/page.tsx`
+- Utilities → `src/lib/utils.ts`
+- Constants → `src/lib/constants.ts`
+- Tests co-located: `foo.ts` + `foo.test.ts`
+- E2E tests → `e2e/`
+- Architecture decisions → `docs/decisions/NNN-decision-title.md`
 
-### Features Structure
+### Naming
+- Components: `PascalCase.tsx`
+- Hooks: `useCamelCase.ts` (always `use` prefix)
+- API types: `Api*` prefix (e.g. `ApiRestaurant`, `ApiCartItem`)
+- View models: domain noun (e.g. `Restaurant`, `CartItem`)
+- Mappers: `to*` prefix (e.g. `toRestaurant`, `toCartItem`)
+- Stores: `*Store` suffix (e.g. `useAuthStore`)
 
-```
-features/<domain>/
-  components/   # UI components for this domain
-  hooks/        # React Query hooks + custom hooks
-  services.ts   # Axios calls via apiClient
-  types.ts      # TypeScript types
-  store.ts      # Redux slice (only auth and cart)
-```
+### TanStack Query
+- Query keys: hierarchical arrays — `['restaurants', filters]`, `['restaurant', id]`
+- `staleTime: 60_000` default, override per query
+- Mutations invalidate related queries on success
+- Error handling: rethrow in queryFn, handle at consumer with `error` property
+- Use `placeholderData: keepPreviousData` for paginated lists
 
-Shared UI primitives: `components/layout/ui/` — Button, Input, Modal, Tabs, SearchInput.  
-Common page shell: `components/layout/MainLayout.tsx` (receives `isLoggedIn` as a prop — not auto-wired to Redux).
+### Auth
+- Token in Zustand persisted store (`useAuthStore`)
+- Auto-attach Bearer token via axios request interceptor
+- Response interceptor: 401 → clear store + redirect to `/login`
+- Protected routes: server-side check in layout/page
 
-### Token Persistence
+### Forms
+- React Hook Form + Zod resolver
+- Validation schema co-located with form component
+- Submit button disabled while pending
+- Errors displayed inline below each field with `aria-invalid` and `aria-describedby`
 
-Stored in `localStorage` under key `token`. `authSlice` reads on init (guarded by `typeof window !== 'undefined'`). On logout, `authService.logout()` removes token and redirects.
+### Accessibility
+- Every interactive element keyboard-reachable
+- Visible focus rings (don't disable outline without replacement)
+- Icon-only buttons need `aria-label`
+- Forms use `<label>` properly associated
+- Modals trap focus and restore on close
+- Loading states announced to screen readers via `aria-live`
 
-## Known Gaps (stubs not yet wired)
+### Git
+- Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`
+- One logical change per commit
+- PR descriptions reference the SPEC criterion being satisfied
+- No direct commits to main; PRs only
 
-Non-obvious from reading the code — files exist but contain placeholders:
+---
 
-| What | Location | Gap |
-|------|----------|-----|
-| `QueryClientProvider` | `app/layout.tsx` | Missing — React Query installed but never provided |
-| Restaurant listing | `app/restaurants/page.tsx` | `[...Array(8)]` hardcoded cards, no API call, filters unused |
-| Restaurant detail | `app/restaurants/[id]/page.tsx` | `id` param never read, no API call, menu `+` buttons dispatch nothing |
-| Checkout | `app/checkout/page.tsx` | All data hardcoded, doesn't read Redux cart, no checkout API call |
-| `useRestaurants` hook | `features/restaurants/hooks/useRestaurants.ts` | Empty file |
-| `useCheckout` hook | `features/checkout/hooks/useCheckout.ts` | Empty file |
-| `useOrders` hook | `features/orders/hooks/useOrders.ts` | Empty file |
-| Navbar cart badge | `components/layout/Navbar.tsx` | Hardcoded to 2, not wired to Redux cart |
-| `SearchInput` on home | `app/page.tsx` | Rendered without `value`/`onChange` — does nothing |
-| Delivery Address | `app/profile/page.tsx` | Renders "coming soon..." placeholder |
+## When the user gives you a task
 
-## Code Rules
+1. Read `./PROGRESS.md` — know where the project is
+2. **If Phase 0 is not yet approved, do Phase 0 first regardless of what was asked**
+3. Otherwise, identify which page and which phase
+4. State the phase explicitly: "Working on Restaurant Detail page, Phase 3 (types)"
+5. Do only that phase. Do not skip ahead.
+6. When phase complete, update `./PROGRESS.md`
+7. Stop and confirm with user before starting next phase
 
-- Always follow the existing features structure for any new domain
-- Always use `API_ENDPOINTS` from `constants/api.ts`, never hardcode URLs
-- Always use route constants from `constants/routes.ts`, never hardcode paths
-- New shared UI primitives go in `components/layout/ui/`
-- Never store sensitive data beyond token in `localStorage`
-- Ask before modifying `lib/apiClient.ts` or `store/index.ts`
+## What you do NOT do
+- Do not skip Phase 0
+- Do not predeclare folders that have no files
+- Do not generate placeholder UI to "save tokens"
+- Do not skip Phase 2 even if the endpoint "looks obvious"
+- Do not write fetch calls in components — go through `src/hooks/api/`
+- Do not store server data in Zustand
+- Do not use `any`
+- Do not ship without tests for the touched code
+- Do not skip the accessibility pass
+
+## Communication style
+- Brief and direct. No preamble.
+- State the phase you're on at the start of each response
+- Reference exact file paths
+- No filler ("Great question!", "Certainly!")
+- If blocked, say what's blocking and what info you need
+
+## Project-specific gotchas (refine after Phase 0)
+- API uses `star` not `rating` — map in mapper layer
+- Menu schema uses `food_name` but cart/order responses return `foodName` — different shapes per endpoint, mappers must handle each
+- `GET /api/resto` real response includes a `filters` object inside `data` that's NOT in the swagger spec — always verify with real API calls, the spec is a guideline not absolute truth
+- Auth endpoints return `{ user, token }` inside `data` — extract token before any other request
+- Cart endpoint pre-groups items by restaurant
+- Some endpoints have inconsistent response wrapping (`data.cart` vs `data.restaurants` vs `data.review`) — mappers must handle this per endpoint
+- All restaurant endpoints return `category` even when swagger schema omits it

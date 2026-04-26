@@ -1,56 +1,71 @@
-# SPEC.md
+# Progress
 
-## Feature: Infrastructure Fixes
+## Setup
+- [x] Repo cloned
+- [x] API contract saved (`./api/swagger.json`)
+- [x] Design assets exported (`./design/*.png`)
+- [x] SPEC.md written
+- [x] CLAUDE.md written
+- [x] PROGRESS.md written
+- [x] API base URL verified (real call to `/api/resto` returned data)
+- [ ] Dependencies installed (pnpm)
+- [ ] Tooling configured (ESLint, Prettier, Husky, lint-staged)
+- [ ] CI configured (GitHub Actions)
+- [ ] Deployment configured (Vercel)
 
-Fix all foundational gaps blocking real data from flowing through the app.
-No new UI. No new pages. Pure wiring.
+## Phase 0 — Discovery (BLOCKER for all code work)
+- [ ] 0.1 — SPEC.md read and internalized
+- [ ] 0.2 — Every Figma design inspected
+- [ ] 0.3 — Swagger fully audited (with real-call verification)
+- [ ] 0.4 — Architecture proposal output
+- [ ] 0.5 — User approval received ⛔
 
----
+## Pages (locked until Phase 0 approved)
 
-## Tasks
+### Restaurants listing — `/restaurants`
+- [ ] Phase 1 — Figma re-inspect
+- [ ] Phase 2 — Swagger re-audit + real-call verify
+- [ ] Phase 3 — Types
+- [ ] Phase 4 — Mapper
+- [ ] Phase 5 — Static UI
+- [ ] Phase 6 — Server state
+- [ ] Phase 7 — Client state
+- [ ] Phase 8 — Tests
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
-### 1. Add QueryClientProvider
-- File: `app/layout.tsx`
-- Wrap the app with `<QueryClientProvider>` from `@tanstack/react-query`
-- Create `lib/queryClient.ts` for the QueryClient instance (do not inline it in layout)
+### Restaurant detail — `/restaurants/[id]`
+- [ ] Phase 1–9
 
-### 2. Wire Navbar cart count to Redux
-- File: `components/layout/Navbar.tsx`
-- Remove hardcoded `2`
-- Read cart item count from Redux using existing `store/hooks.ts` typed selector
-- Use total quantity of all items, not number of unique items
+### Checkout — `/checkout`
+- [ ] Phase 1–9
 
-### 3. Wire SearchInput on Home page
-- File: `app/page.tsx`
-- Add `useState` for search query
-- Pass `value` and `onChange` to `<SearchInput>`
-- On submit/enter, navigate to `/restaurants?search=<query>` using Next.js router
+### Delivery address — profile section
+- [ ] Phase 1–9
 
-### 4. Complete restaurantService
-- File: `features/restaurants/services.ts`
-- Add service methods for all endpoints already defined in `constants/api.ts`:
-  - `getList(filters?)` — restaurant list with optional filter params
-  - `getById(id)` — restaurant detail
-  - `search(query)` — search by name
-  - `getBestSeller()` — best seller list
-  - `getNearby()` — nearby restaurants
-- Use existing `apiClient` from `lib/apiClient.ts`
-- Mirror the pattern of existing `getRecommended()`
+### Auth flows
+- [ ] Login page (Phase 1–9)
+- [ ] Register page (Phase 1–9)
+- [ ] Auth store + interceptors
 
----
+### Order history
+- [ ] `/orders` page (Phase 1–9)
 
-## Out of Scope for This SPEC
-- No UI changes
-- No new pages
-- Do not touch checkout, orders, or profile
-- Do not fill empty hooks yet (useRestaurants, useCheckout, useOrders) — that comes next
+## Cross-cutting work (post-page)
+- [ ] Global error boundary
+- [ ] 404 page
+- [ ] Layout + navigation
+- [ ] Cart drawer (shared component)
+- [ ] Toast notifications
+- [ ] Sentry integration
+- [ ] Web Vitals reporting
+- [ ] README with live demo link + screenshots
+- [ ] ADRs documented in `docs/decisions/`
 
----
-
-## Definition of Done
-- [ ] QueryClientProvider wrapping app in layout.tsx
-- [ ] Navbar cart badge reads from Redux, not hardcoded
-- [ ] SearchInput navigates to /restaurants?search= on enter
-- [ ] restaurantService has all 5 new methods
-- [ ] npm run build passes with no errors
-- [ ] npm run lint passes with no errors
+## Quality gates (must pass before considering "done")
+- [ ] TypeScript strict, zero errors
+- [ ] ESLint clean
+- [ ] All tests passing in CI
+- [ ] Lighthouse mobile: Perf ≥ 90, A11y ≥ 95, BP = 100, SEO ≥ 95
+- [ ] WCAG 2.1 AA verified manually
+- [ ] Live demo deployed and working
+- [ ] README polished

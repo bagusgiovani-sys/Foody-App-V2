@@ -1,95 +1,69 @@
-# PROGRESS.md
+# Progress
 
-Snapshot of what is built, what is a stub, and what is missing.
+## Setup
+- [x] Repo cloned
+- [x] API contract saved (`./api/swagger.json`)
+- [x] Design assets exported (`./design/*.png`)
+- [x] SPEC.md written
+- [x] CLAUDE.md written
+- [ ] Dependencies installed (pnpm)
+- [ ] Tooling configured (ESLint, Prettier, Husky, lint-staged)
+- [ ] CI configured (GitHub Actions)
+- [ ] Deployment configured (Vercel)
 
----
+## Phase 0 — Discovery (BLOCKER for all code work)
+- [ ] 0.1 — SPEC.md read and internalized
+- [ ] 0.2 — Every Figma design inspected
+- [ ] 0.3 — Swagger fully audited
+- [ ] 0.4 — Architecture proposal output
+- [ ] 0.5 — User approval received ⛔
 
-## Done — fully wired end-to-end
+## Pages (locked until Phase 0 approved)
 
-### Auth
-- Login page: form, show/hide password, error display, redirect on success, clears error on unmount
-- Register page: form with name/email/phone/password/confirmPassword, client-side password match + length validation, redirect on success
-- `authSlice` (`features/auth/authSlice.ts`): three async thunks (register, login, getProfile), token written to localStorage on success, isAuthenticated flag
-- `authService` (`features/auth/services.ts`): register, login, getProfile, updateProfile, logout (clears token + redirects)
-- `useAuth` hook: thin wrapper around Redux dispatch/selector
-- Axios interceptor: injects `Authorization: Bearer` on every request, auto-redirects to `/login` on 401 for protected routes only
+### Restaurants listing — `/restaurants`
+- [ ] Phase 1 — Figma re-inspect
+- [ ] Phase 2 — Swagger re-audit
+- [ ] Phase 3 — Types
+- [ ] Phase 4 — Mapper
+- [ ] Phase 5 — Static UI
+- [ ] Phase 6 — Server state
+- [ ] Phase 7 — Client state
+- [ ] Phase 8 — Tests
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
-### Cart (client state only)
-- `cartSlice` (`features/cart/store.ts`): add, remove, updateQuantity, increment, decrement, clear, setCart, calculateTotals
-- Single-restaurant constraint enforced in `useCart` hook with window.confirm prompt
-- Cart page (`app/cart/page.tsx`): reads Redux, groups items by restaurant, empty-state screen, total display, "Proceed to Checkout" button
+### Restaurant detail — `/restaurants/[id]`
+- [ ] Phase 1–9
 
-### Home page
-- Hero section with full-screen background image, gradient overlay
-- `HeroSearch` (`components/layout/HeroSearch.tsx`): controlled `SearchInput`, navigates to `/restaurants?search=<query>` on Enter
-- `CategoryShortcuts`: 6 static navigation links pointing to `/restaurants?filter=...`
-- `RestaurantList`: calls `restaurantService.getRecommended()`, falls back to 12 hardcoded mock restaurants on any error, renders `RestaurantCard` grid
+### Checkout — `/checkout`
+- [ ] Phase 1–9
 
-### Restaurant card
-- `RestaurantCard`: links to `/restaurants/:id`, shows name, star rating, city, distance, logo with initials fallback
+### Delivery address — profile section
+- [ ] Phase 1–9
 
-### Navbar
-- Scroll-aware: transparent on top, white + shadow when scrolled
-- Logged-out state: Sign In + Sign Up links
-- Logged-in state: Cart icon (badge) + Profile avatar/name link
-- Cart badge reads `totalItems` from Redux cart slice (no longer hardcoded)
+### Auth flows
+- [ ] Login page (Phase 1–9)
+- [ ] Register page (Phase 1–9)
+- [ ] Auth store + interceptors
 
-### Profile page
-- Sidebar navigation with three sections: My Profile / My Orders / Delivery Address
-- Loading spinner while `useProfile` fetches
-- My Orders section: fetches from API via `getMyOrders()`, status tabs, search by restaurant name, `OrderCard` with status badge, item list, total, date
+### Order history
+- [ ] `/orders` page (Phase 1–9)
 
-### Infrastructure
-- `QueryClientProvider` added via `store/provider.tsx` using `lib/queryClient.ts` — React Query now works everywhere
-- `restaurantService` (`features/restaurants/services.ts`): all 6 methods implemented — `getRecommended`, `getList`, `getById`, `search`, `getBestSeller`, `getNearby`
-- `npm run lint`: 0 errors (fixed pre-existing `no-explicit-any` and `no-unescaped-entities` errors)
+## Cross-cutting work (post-page)
+- [ ] Global error boundary
+- [ ] 404 page
+- [ ] Layout + navigation
+- [ ] Cart drawer (shared component)
+- [ ] Toast notifications
+- [ ] Sentry integration
+- [ ] Web Vitals reporting
+- [ ] README with live demo link + screenshots
+- [ ] ADRs documented in `docs/decisions/`
 
----
-
-## Stub — UI shell built, not wired to real data
-
-### Checkout page (`app/checkout/page.tsx`)
-- Layout matches Figma: left column (delivery address card + order items), right column (payment method selector + payment summary + Buy button)
-- **Everything is hardcoded**: address text is static, order items are a dummy `[...Array(2)]`, totals are static strings
-- Does NOT read from Redux cart, does NOT call the checkout API, "Buy" button does nothing
-
-### Restaurants listing page (`app/restaurants/page.tsx`)
-- Filter sidebar: Distance checkboxes, Min/Max price inputs, Rating checkboxes — all stored in local `useState`
-- **NOT fetching any data**: restaurant grid is `[...Array(8)]` placeholder cards with hardcoded "Burger King" name
-- Filter state is never applied to any data
-
-### Restaurant detail page (`app/restaurants/[id]/page.tsx`)
-- Full layout: image gallery placeholder, restaurant info row, menu tabs (All Menu / Food / Drink), menu grid, reviews grid
-- **Route param `id` is never read** — no `useParams()` call, no API call
-- Menu `+` buttons do nothing — not dispatching to cart Redux
-- Review cards show hardcoded "Michael Brown" text
-
----
-
-## Empty hooks (file exists, contains 1 empty line)
-
-| File | Purpose |
-|------|---------|
-| `features/restaurants/hooks/useRestaurants.ts` | Should wrap React Query for restaurant list/detail |
-| `features/checkout/hooks/useCheckout.ts` | Should wrap checkout API call + cart clear |
-| `features/orders/hooks/useOrders.ts` | Should wrap React Query for order history |
-
----
-
-## Remaining gaps
-
-| Gap | Location | Note |
-|-----|----------|------|
-| `MainLayout` auth props | All pages using `MainLayout` | `isLoggedIn` is hardcoded `false`; not read from Redux auth state |
-| Delivery Address section | `app/profile/page.tsx` | Renders "coming soon..." placeholder |
-
----
-
-## Next step (start here next session)
-
-**Fill `useRestaurants` hook** (`features/restaurants/hooks/useRestaurants.ts`):
-- `useRestaurantList(filters?)` — React Query hook calling `restaurantService.getList(filters)`
-- `useRestaurantDetail(id)` — React Query hook calling `restaurantService.getById(id)`
-
-Then wire `app/restaurants/page.tsx` to use `useRestaurantList` (replace the `[...Array(8)]` placeholder).
-Then wire `app/restaurants/[id]/page.tsx` to use `useRestaurantDetail` (read `useParams`, call hook, render real data, wire menu `+` to cart).
+## Quality gates (must pass before considering "done")
+- [ ] TypeScript strict, zero errors
+- [ ] ESLint clean
+- [ ] All tests passing in CI
+- [ ] Lighthouse mobile: Perf ≥ 90, A11y ≥ 95, BP = 100, SEO ≥ 95
+- [ ] WCAG 2.1 AA verified manually
+- [ ] Live demo deployed and working
+- [ ] README polished
