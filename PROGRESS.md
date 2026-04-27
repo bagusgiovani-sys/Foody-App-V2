@@ -47,7 +47,15 @@
 - [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### Restaurant detail — `/restaurants/[id]`
-- [ ] Phase 1–9
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 2 — Swagger re-audit + real-call verify
+- [x] Phase 3 — Types (ApiRestaurantDetail, MenuItemDetail, ReviewDetail, RestaurantDetail)
+- [x] Phase 4 — Mapper (foodName→name, star→rating for menus and reviews)
+- [x] Phase 5 — Static UI (gallery, info bar, menu grid, review grid, all skeletons)
+- [x] Phase 6 — Server state (useRestaurantDetail hook)
+- [x] Phase 7 — Client state (menu type tabs, qty controls, add-to-cart, navbar dropdown)
+- [ ] Phase 8 — Tests (skipped for now)
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### My Cart — `/cart`
 - [ ] Phase 1–9
