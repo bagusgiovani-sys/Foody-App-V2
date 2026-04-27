@@ -58,8 +58,16 @@
 - [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### My Cart — `/cart`
-- [ ] Phase 1–9
-- [ ] Remove Redux cart store, wire to API cart
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 2 — Swagger re-audit + real-call verify
+- [x] Phase 3 — Types (ApiCart*, Cart view model)
+- [x] Phase 4 — Mapper (foodName→name, ApiCartResponse→Cart)
+- [x] Phase 5 — Static UI (skeleton, empty, error, loaded states)
+- [x] Phase 6 — Server state (useCart, useAddToCart, useUpdateCartItem, useRemoveCartItem, useClearCart)
+- [x] Phase 7 — Client state (qty controls inline, per-group checkout → /checkout?restaurantId=)
+- [ ] Phase 8 — Tests (skipped for now)
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
+- [x] Remove Redux cart store, wire to API cart
 
 ### Checkout — `/checkout`
 - [ ] Phase 1–9
@@ -74,11 +82,11 @@
 - [ ] Phase 1–9
 
 ## Cross-cutting work (do before or alongside pages)
-- [ ] `store/useAuthStore.ts` — Zustand persisted auth (replaces Redux)
-- [ ] Remove `store/index.ts`, `store/hooks.ts`, `store/provider.tsx` (Redux)
-- [ ] Remove `features/auth/authSlice.ts` (Redux)
-- [ ] Remove `features/cart/store.ts` (Redux)
-- [ ] Update `lib/apiClient.ts` — read token from Zustand, not localStorage
+- [x] `store/useAuthStore.ts` — Zustand persisted auth (replaces Redux)
+- [x] Remove `store/index.ts`, `store/hooks.ts` (Redux) — provider now pure QueryClientProvider
+- [x] Remove `features/auth/authSlice.ts` (Redux)
+- [x] Remove `features/cart/store.ts` (Redux)
+- [x] Update `lib/apiClient.ts` — read token from Zustand, not localStorage
 - [ ] Global error boundary
 - [ ] 404 page
 - [ ] Toast notifications
