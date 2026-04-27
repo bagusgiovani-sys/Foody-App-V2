@@ -30,20 +30,20 @@
 ## Pages
 
 ### Auth flows
-- [ ] Login page (Phase 1–9)
-- [ ] Register page (Phase 1–9)
-- [ ] `store/useAuthStore.ts` — Zustand persisted store (replaces Redux authSlice)
-- [ ] Update `lib/apiClient.ts` interceptors to read from Zustand store
+- [x] Login page (Phases 1–7, 9 done; Phase 8 skipped for now)
+- [x] Register page (Phases 1–7, 9 done; Phase 8 skipped for now)
+- [x] `store/useAuthStore.ts` — Zustand persisted store (replaces Redux authSlice)
+- [x] Update `lib/apiClient.ts` interceptors to read from Zustand store
 
 ### Home / Restaurant listing — `/` and `/restaurants`
-- [ ] Phase 1 — Figma re-inspect
-- [ ] Phase 2 — Swagger re-audit + real-call verify
-- [ ] Phase 3 — Types
-- [ ] Phase 4 — Mapper (if needed)
-- [ ] Phase 5 — Static UI
-- [ ] Phase 6 — Server state (TanStack Query hooks)
-- [ ] Phase 7 — Client state (filters, tabs)
-- [ ] Phase 8 — Tests
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 2 — Swagger re-audit + real-call verify
+- [x] Phase 3 — Types (`features/restaurants/types.ts`)
+- [x] Phase 4 — Mapper (`features/restaurants/mapper.ts` — `star` → `rating`)
+- [x] Phase 5 — Static UI (skeleton loaders, all states)
+- [x] Phase 6 — Server state (`useRestaurantList` TanStack Query hook)
+- [x] Phase 7 — Client state (distance/price/rating filters, mobile drawer)
+- [ ] Phase 8 — Tests (skipped for now)
 - [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### Restaurant detail — `/restaurants/[id]`
