@@ -8,11 +8,7 @@ export default function RestaurantDetailPage() {
   const { isAuthenticated, user } = useAuth();
 
   return (
-    <MainLayout 
-      isLoggedIn={isAuthenticated} 
-      userName={user?.name}
-      userAvatar={user?.avatar}
-    >
+    <MainLayout>
       <div className="bg-gray-50 min-h-screen">
         {/* Hero Section */}
         <div className="bg-white">

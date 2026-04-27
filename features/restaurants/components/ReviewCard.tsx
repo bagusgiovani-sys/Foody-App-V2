@@ -1,55 +1,49 @@
-// 📄 FILE: features/restaurants/components/RestaurantCard.tsx
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import type { Restaurant } from '../types';
+import { Star } from 'lucide-react';
+import type { Review } from '../types';
 
-interface RestaurantCardProps {
-  restaurant: Restaurant;
+interface ReviewCardProps {
+  review: Review;
 }
 
-export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+export default function ReviewCard({ review }: ReviewCardProps) {
   return (
-    <Link href={`/restaurants/${restaurant.id}`}>
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition cursor-pointer">
-        {/* Restaurant Logo */}
-        <div className="relative h-48 bg-gray-100 flex items-center justify-center">
+    <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <div className="flex items-start gap-3 mb-3">
+        {review.user.avatar ? (
           <img
-            src={restaurant.logo}
-            alt={restaurant.name}
-            className="w-32 h-32 object-contain"
+            src={review.user.avatar}
+            alt={review.user.name}
+            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
           />
-        </div>
-
-        {/* Restaurant Info */}
-        <div className="p-4">
-          <h3 className="font-bold text-lg text-gray-900 mb-2">
-            {restaurant.name}
-          </h3>
-          
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-            <span className="text-yellow-500">⭐</span>
-            <span className="font-medium">{restaurant.star}</span>
-            <span>({restaurant.reviewCount} reviews)</span>
+        ) : (
+          <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-gray-500 font-bold">
+            {review.user.name.charAt(0).toUpperCase()}
           </div>
-
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span>📍</span>
-            <span>{restaurant.place}</span>
-            <span>•</span>
-            <span>{restaurant.distance} km</span>
-          </div>
-
-          {restaurant.isFrequentlyOrdered && (
-            <div className="mt-3 inline-block">
-              <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-medium">
-                Frequently Ordered
-              </span>
-            </div>
-          )}
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-gray-900">{review.user.name}</p>
+          <p className="text-sm text-gray-400">
+            {new Date(review.createdAt).toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </p>
         </div>
       </div>
-    </Link>
+
+      <div className="flex gap-0.5 mb-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            className={`w-4 h-4 ${i < review.star ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'}`}
+          />
+        ))}
+      </div>
+
+      <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
+    </div>
   );
 }

@@ -1,32 +1,81 @@
-// 📄 FILE: features/restaurants/types.ts
-
-export interface MenuItem {
-  id: number;
-  foodName: string;
-  price: number;
-  type: string;
-  image: string;
-}
-
-export interface Restaurant {
+// Raw API shape from GET /api/resto
+export interface ApiRestaurant {
   id: number;
   name: string;
   star: number;
   place: string;
-  lat?: number;  // Only in recommended endpoint
-  long?: number; // Only in recommended endpoint
   logo: string;
   images: string[];
-  category: string;
+  category: string | null;
   reviewCount: number;
-  menuCount?: number; // Not in recommended endpoint
-  priceRange?: {      // Not in recommended endpoint
-    min: number;
-    max: number;
+  menuCount: number;
+  priceRange: { min: number; max: number };
+  distance?: number; // only present with location-based queries
+}
+
+export interface ApiPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface ApiRestaurantListFilters {
+  range: number | null;
+  priceMin: number | null;
+  priceMax: number | null;
+  rating: number | null;
+  category: string | null;
+}
+
+export interface ApiRestaurantListResponse {
+  success: boolean;
+  message: string;
+  data: {
+    restaurants: ApiRestaurant[];
+    pagination: ApiPagination;
+    filters: ApiRestaurantListFilters;
   };
-  sampleMenus?: MenuItem[]; // Only in recommended endpoint
-  isFrequentlyOrdered?: boolean; // Only in recommended endpoint
-  distance: number;
+}
+
+// Query params accepted by GET /api/resto
+export interface RestaurantFilters {
+  range?: number;
+  priceMin?: number;
+  priceMax?: number;
+  rating?: number;
+  category?: string;
+  page?: number;
+  limit?: number;
+}
+
+// View model — what the UI consumes (star renamed to rating)
+export interface Restaurant {
+  id: number;
+  name: string;
+  rating: number;
+  place: string;
+  logo: string;
+  images: string[];
+  category: string | null;
+  reviewCount: number;
+  menuCount: number;
+  priceRange: { min: number; max: number };
+  distance?: number;
+}
+
+export interface RestaurantListData {
+  restaurants: Restaurant[];
+  pagination: ApiPagination;
+}
+
+// For restaurant detail page (will be expanded in that phase)
+export interface MenuItem {
+  id: number;
+  food_name: string;
+  price: number;
+  type: string;
+  image: string;
 }
 
 export interface Review {
@@ -38,57 +87,5 @@ export interface Review {
     id: number;
     name: string;
     avatar: string;
-  };
-}
-
-export interface RestaurantDetail {
-  id: number;
-  name: string;
-  star: number;
-  averageRating: number;
-  place: string;
-  coordinates: {
-    lat: number;
-    long: number;
-  };
-  distance: number;
-  logo: string;
-  images: string[];
-  category: string;
-  totalMenus: number;
-  totalReviews: number;
-  menus: MenuItem[];
-  reviews: Review[];
-}
-
-export interface RecommendedRestaurantsResponse {
-  success: boolean;
-  data: {
-    recommendations: Restaurant[];
-    message: string;
-  };
-}
-
-export interface RestaurantsListResponse {
-  success: boolean;
-  data: {
-    restaurants: Restaurant[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  };
-}
-
-export interface RestaurantDetailResponse {
-  success: boolean;
-  data: RestaurantDetail;
-}
-
-export interface SearchRestaurantsResponse extends RestaurantsListResponse {
-  data: RestaurantsListResponse['data'] & {
-    searchQuery: string;
   };
 }

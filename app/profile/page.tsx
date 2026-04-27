@@ -16,7 +16,7 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <MainLayout isLoggedIn={isAuthenticated} userName={user?.name} userAvatar={user?.avatar}>
+      <MainLayout>
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
@@ -46,11 +46,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <MainLayout 
-      isLoggedIn={isAuthenticated} 
-      userName={user?.name || profile?.name}
-      userAvatar={user?.avatar}
-    >
+    <MainLayout>
       <div className="bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-8 py-12">
           <div className="grid grid-cols-[280px_1fr] gap-8">

@@ -45,11 +45,7 @@ export default function CartPage() {
   };
 
   return (
-    <MainLayout 
-      isLoggedIn={isAuthenticated} 
-      userName={user?.name}
-      userAvatar={user?.avatar}
-    >
+    <MainLayout>
       <div className="bg-gray-50 min-h-screen">
         {/* Empty cart state */}
         {items.length === 0 ? (

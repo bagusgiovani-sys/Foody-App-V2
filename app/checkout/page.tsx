@@ -8,11 +8,7 @@ export default function CheckoutPage() {
   const { isAuthenticated, user } = useAuth();
 
   return (
-    <MainLayout 
-      isLoggedIn={isAuthenticated} 
-      userName={user?.name}
-      userAvatar={user?.avatar}
-    >
+    <MainLayout>
       <div className="bg-gray-50 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold mb-8">Checkout</h1>
