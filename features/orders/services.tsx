@@ -1,15 +1,22 @@
-// 📄 FILE: features/orders/services.ts
-
 import { apiClient } from '@/lib/apiClient';
 import { API_ENDPOINTS } from '@/constants/api';
-import type { Order, CheckoutRequest } from './types';
+import type { ApiOrdersResponse, OrderStatus, ReviewPayload } from './types';
 
-export async function getMyOrders(): Promise<Order[]> {
-  const response = await apiClient.get(API_ENDPOINTS.ORDERS.MY_ORDERS);
-  return response.data;
-}
+export const ordersService = {
+  async getMyOrders(status: OrderStatus): Promise<ApiOrdersResponse> {
+    const res = await apiClient.get<{ data: ApiOrdersResponse }>(
+      API_ENDPOINTS.ORDERS.MY_ORDERS,
+      { params: { status, limit: 50 } }
+    );
+    return res.data.data;
+  },
 
-export async function checkout(data: CheckoutRequest): Promise<Order> {
-  const response = await apiClient.post(API_ENDPOINTS.ORDERS.CHECKOUT, data);
-  return response.data;
-}
+  async createReview(payload: ReviewPayload): Promise<void> {
+    await apiClient.post(API_ENDPOINTS.REVIEWS.CREATE, {
+      transactionId: payload.transactionId,
+      restaurantId: payload.restaurantId,
+      star: payload.star,
+      comment: payload.comment,
+    });
+  },
+};

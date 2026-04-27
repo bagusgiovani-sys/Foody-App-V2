@@ -70,10 +70,22 @@
 - [x] Remove Redux cart store, wire to API cart
 
 ### Checkout — `/checkout`
-- [ ] Phase 1–9
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 2 — Swagger re-audit (POST /api/order/checkout confirmed)
+- [x] Phase 3 — Types (CheckoutPayload, ApiTransaction, TransactionReceipt)
+- [x] Phase 4 — No mapper needed (API fields already correct)
+- [x] Phase 5 — Static UI (address form, order items, payment method, summary)
+- [x] Phase 6 — Server state (useCheckout mutation → POST /api/order/checkout)
+- [x] Phase 7 — Client state (RHF+Zod form, payment radio selection, restaurantId filter from query param)
+- [ ] Phase 8 — Tests (skipped for now)
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### Payment success — `/checkout/success`
-- [ ] Phase 1–9
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 5 — Static UI (green checkmark, receipt rows, dashed dividers)
+- [x] Phase 7 — Client state (reads from useCheckoutStore, clears on navigate)
+- [ ] Phase 8 — Tests (skipped for now)
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### My Orders — `/orders`
 - [ ] Phase 1–9

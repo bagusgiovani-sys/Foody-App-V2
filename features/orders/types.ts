@@ -1,31 +1,57 @@
-// 📄 FILE: features/orders/types.ts
+export type OrderStatus = 'preparing' | 'on_the_way' | 'delivered' | 'done' | 'cancelled';
 
-export interface Order {
-  order_id: string;
-  user_id: string;
-  status: string;
-  total_price: number;
-  created_at: string;
-  restaurant?: {
-    resto_id: string;
-    name: string;
-    image?: string;
-  };
-  items?: OrderItem[];
-}
-
-export interface OrderItem {
-  menu_id: string;
-  food_name: string;
-  quantity: number;
+export interface ApiOrderItem {
+  menuId: number;
+  menuName: string;
   price: number;
-  image?: string;
+  image: string | null;
+  quantity: number;
+  itemTotal: number;
 }
 
-export interface CheckoutRequest {
-  items: {
-    menu_id: string;
-    quantity: number;
-  }[];
-  total_price: number;
+export interface ApiOrderRestaurant {
+  restaurant: { id: number; name: string; logo: string };
+  items: ApiOrderItem[];
+  subtotal: number;
+}
+
+export interface ApiOrderPricing {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  totalPrice: number;
+}
+
+export interface ApiOrder {
+  id: number;
+  transactionId: string;
+  status: OrderStatus;
+  paymentMethod: string;
+  deliveryAddress: string;
+  phone: string;
+  pricing: ApiOrderPricing;
+  restaurants: ApiOrderRestaurant[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApiOrdersResponse {
+  orders: ApiOrder[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ReviewPayload {
+  transactionId: string;
+  restaurantId: number;
+  star: number;
+  comment?: string;
+}
+
+export interface OrdersFilters {
+  status: OrderStatus;
 }

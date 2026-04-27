@@ -5,7 +5,6 @@ import { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import ProfileMenu from '@/features/profile/components/ProfileMenu';
 import ProfileContent from '@/features/profile/components/ProfileContent';
-import OrdersList from '@/features/orders/components/OrdersList';
 import { useProfile } from '@/features/profile/hooks/useProfile';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -32,7 +31,7 @@ export default function ProfilePage() {
       case 'profile':
         return <ProfileContent profile={profile} />;
       case 'orders':
-        return <OrdersList />;
+        return null;
       case 'delivery':
         return (
           <div className="bg-white rounded-xl shadow-sm p-8">
