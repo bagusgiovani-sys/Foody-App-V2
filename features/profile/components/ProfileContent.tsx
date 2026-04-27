@@ -1,7 +1,7 @@
 // 📄 FILE: features/profile/components/ProfileContent.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { ApiProfile } from '../types';
 
 interface ProfileContentProps {
@@ -9,13 +9,7 @@ interface ProfileContentProps {
 }
 
 export default function ProfileContent({ profile }: ProfileContentProps) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleUpdateProfile = () => {
-    // TODO: Implement update profile logic
-    setIsEditing(true);
-    console.log('Update profile');
-  };
+  const handleUpdateProfile = () => {};
 
   if (!profile) {
     return (

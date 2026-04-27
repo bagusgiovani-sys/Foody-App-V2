@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '../services';
 import type { LoginRequest, RegisterRequest } from '../types';
 
-// Convenience hook for reading auth state — used by pages that haven't been rebuilt yet
 export function useAuth() {
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
@@ -27,6 +27,7 @@ export function useLogin() {
       setAuth(res.data.user, res.data.token);
       router.push('/');
     },
+    onError: () => toast.error('Invalid email or password'),
   });
 }
 
@@ -40,5 +41,6 @@ export function useRegister() {
       setAuth(res.data.user, res.data.token);
       router.push('/');
     },
+    onError: () => toast.error('Registration failed. Please try again.'),
   });
 }

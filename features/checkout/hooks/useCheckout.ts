@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { checkoutService } from '../services';
 import type { CheckoutPayload } from '../types';
 import { useCheckoutStore } from '@/store/useCheckoutStore';
@@ -28,5 +29,6 @@ export function useCheckout() {
       queryClient.removeQueries({ queryKey: CART_QUERY_KEY });
       router.push('/checkout/success');
     },
+    onError: () => toast.error('Order failed. Please try again.'),
   });
 }

@@ -1,131 +1,112 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/HKszkTJ6)
-# Challenge 9 - Restaurant Web Frontend (Next JS + TypeScript)
+# Foody V2
 
-# Description
+A portfolio-grade restaurant ordering app — frontend only, built against a fixed deployed backend.
 
-Membangun Frontend MVP untuk aplikasi Restaurant yang terhubung ke backend. Fokus
-pada alur dasar: eksplor menu, filter & pencarian, keranjang, dan checkout sederhana
+**Live API:** https://be-restaurant-production.up.railway.app  
+**Figma Design:** [Restaurant App](https://www.figma.com/design/1By7DB1gDCNEoW62UqLUrA/Restaurant-App?node-id=37411-2452)
 
-# Repo Backend & Figma
+---
 
-- Backend : https://be-restaurant-production.up.railway.app/apiswagger/
+## Tech Stack
 
-- [Figma Design Link](https://www.figma.com/design/1By7DB1gDCNEoW62UqLUrA/Restaurant-App?node-id=37411-2452&p=f&t=BLkgO3phzsM4gHZt-0)
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS v4 |
+| Server state | TanStack Query v5 |
+| Client state | Zustand v5 (persisted auth) |
+| Forms | React Hook Form + Zod |
+| HTTP | Axios with request/response interceptors |
+| Toasts | Sonner |
 
-# Tech Stack Wajib
+No Redux in the final codebase — fully migrated to TanStack Query + Zustand.
 
-- Next JS + TypeScript — framework & type safety
-- Tailwind CSS — styling cepat, utility-first
-- shadcn/ui — komponen UI siap pakai
-- Redux Toolkit — simpan filter, cart, dan state UI lain (client state)
-- TanStack Query (React Query) — fetching & caching server state
-- Optimistic UI — UX responsif(mis. tambah/hapus cart)
-- Day.js — format waktu/tanggal
+---
 
-# MVP Scope (Fitur Minimum)
+## Pages
 
-1. Halaman Menu (Home): daftar makanan & minuman, harga, kategori, rating, foto.
-2. Filter & Sort: berdasarkan kategori, harga, rating; simpan di Redux.
-3. Pencarian: search by name/keyword (client-side atau server-side).
-4. Detail/Quick View: modal atau halaman detail sederhana (opsional).
-5. Keranjang (Cart): tambah, ubah qty, hapus item — Optimistic UI.
-6. Checkout Sederhana: form nama/no HP/alamat(tanpa payment gateway).
-7. Riwayat Pesanan (History): daftar pesanan yang pernah dibuat (sederhana).
-8. State Management: server state via React Query, UI state via Redux.
-9. Responsif: mobile-first, minimal breakpoint sm/md/lg.
-10. Aksesibilitas: alt text, focus ring, warna kontras cukup.
-11. Deploy ke vercel. (Optional)
+| Page | Route | Auth |
+|---|---|---|
+| Home | `/` | No |
+| Restaurant listing | `/restaurants` | No |
+| Restaurant detail | `/restaurants/[id]` | No |
+| My Cart | `/cart` | Yes |
+| Checkout | `/checkout` | Yes |
+| Payment Success | `/checkout/success` | Yes |
+| My Orders | `/orders` | Yes |
+| Profile | `/profile` | Yes |
+| Login | `/login` | No |
+| Register | `/register` | No |
 
-# Pemisahan State: Redux vs React Query
+---
 
-- React Query (Server State): menu, kategori, detail item, order list.
-- Redux Toolkit (Client/UI State): filters, sort, search query, cart, modal open/close.
+## Architecture highlights
 
-# Struktur Project (Direkomendasikan)
+- **Mapper pattern** — every API response is transformed in a mapper layer (`star → rating`, `foodName → name`) before reaching the UI. Components only consume view models, never raw API shapes.
+- **Feature-based structure** — each domain (`auth`, `restaurants`, `cart`, `checkout`, `orders`, `profile`) owns its types, services, hooks, and components.
+- **Zero server state in Zustand** — TanStack Query owns all server state. Zustand is used only for auth (persisted) and the one-shot checkout receipt store (non-persisted).
+- **Token flow** — Bearer token read from Zustand in the Axios interceptor. 401 on protected routes clears auth and redirects to `/login`.
 
-```
-src/
-├─ app/ # Entry & routing (Vite/CRA: src/main.tsx + src/App.tsx)
-├─ pages/ # Page-level components (Home, Cart, Checkout, Orders)
-├─ features/
-│ ├─ cart/ # Redux slice cart + hooks
-│ └─ filters/ # Redux slice filter/sort/search
-├─ components/ # UI reusable (Navbar, Footer, ProductCard, EmptyState)
-├─ ui/ # shadcn/ui wrappers jika perlu
-├─ services/
-│ ├─ api/ # axios instance, request helpers
-│ └─ queries/ # React Query hooks (useMenusQuery, dst.)
-├─ types/ # TypeScript types (MenuItem, Category, Order, dst.)
-├─ lib/ # utils (formatCurrency, cn, etc.)
-├─ styles/ # global.css, tailwind.css
-├─ assets/ # images/icons jika perlu
-└─ config/ # env, constants, route paths
-```
+---
 
-# Persiapan Project (Langkah Cepat)
+## Getting Started
 
-1. Install Tailwind CSS: sesuai dokumentasi Tailwind (init & konfigurasi).
-2. Install shadcn/ui: setup sesuai docs; generate komponen yang dibutuhkan (Button,
-   Input, Card, Dialog).
-3. Install Redux Toolkit & React Query: `npm i @reduxjs/toolkit react-redux	
-@tanstack/react-query	axios	dayjs`
-4. Siapkan `axios` instance (`/services/api/axios.ts`) dan baseURL dari backend.
-5. Buat store Redux (`/features/store.ts`) dan slice (cart, filters).
-6. Bungkus App dengan `<Provider>`(Redux) dan `<QueryClientProvider>`(React Query).
-
-# Environment & Konfigurasi
-
-- Buat `.env` dengan `VITE_API_BASE_URL	=	link	Api (sesuaikan).
-- Axios instance membaca `import.meta.env.VITE_API_BASE_URL`.
-- Hindari hard-code URL API di komponen.
-
-# Getting Started
-
-for this project first, then to run the app, run
-
-```
+```bash
+npm install
 npm run dev
 ```
 
-on terminal
+Open [http://localhost:3000](http://localhost:3000).
 
-Study the Figma Design: Open the Figma link and thoroughly examine the design. Understand the layout, spacing, colors, typography, and responsive behavior.
+### Environment
 
-HTML Structure: Open the public/index.html file. Begin by structuring the page with HTML elements that mirror the design.
+The API base URL defaults to the production backend. To override:
 
-Tailwind CSS: Use Tailwind CSS classes directly within your HTML elements to apply styles. For example:
-
-<div class="flex justify-center items-center">...</div>
-
-<h1 class="text-3xl font-bold text-blue-600">...</h1>
-
-Test in the Browser: Run npm run dev to see it on your browser
-
-Iterate: Continue to refine your HTML and Tailwind CSS until your webpage accurately matches the Figma design.
-
-# Important Notes
-
-You can modify the folder structure only on src and public folder, don't change anything related to project setup
-
-Tailwind CSS Documentation: Refer to the official Tailwind CSS documentation (https://tailwindcss.com/docs) for information on available classes and how to use them.
-
-Figma Inspection: Use the "Inspect" feature in Figma to get precise measurements, colors, and font styles from the design.
-
-# Evaluation System
-
-The evaluation for this assignment will be based on the following criteria:
-
-1.  **Basic concept and project structure:** How you understand the concept of next js and how you manage the project structure
-2.  **Routing and rendering method:** How you manage routing and rendering method (CSR, SSR, SSG)
-3.  **Next js advance features and optimizations:** How you use next js optimized tools like next/image etc.
-4.  **Deployment & best practice:** How you deploy your app on vercel
+```bash
+# .env.local
+NEXT_PUBLIC_API_BASE_URL=https://be-restaurant-production.up.railway.app
+```
 
 ---
 
-# How to Upload your Challenge
+## Project Structure
 
-Check this module: [click this](https://orchid-clematis-3e4.notion.site/Panduan-Penggunaan-Git-Untuk-Upload-Assignment-e2d80a19b3684f5d8f1a4209dcf85445?pvs=73)
+```
+app/                    # Next.js App Router pages
+  (auth)/login          # Login page
+  (auth)/register       # Register page
+  restaurants/          # Listing + [id] detail
+  cart/                 # Cart page
+  checkout/             # Checkout + /success
+  orders/               # My orders
+  profile/              # Profile + edit modal
+components/
+  layout/               # Navbar, Footer, MainLayout, SidebarNav
+features/
+  auth/                 # Types, services, hooks, components
+  cart/                 # Types, mapper, services, hooks, components
+  checkout/             # Types, services, hooks
+  orders/               # Types, services, hooks, components
+  profile/              # Types, services, hooks, components
+  restaurants/          # Types, mapper, services, hooks, components
+store/
+  useAuthStore.ts       # Zustand persisted auth
+  useCheckoutStore.ts   # Zustand ephemeral receipt
+  provider.tsx          # QueryClientProvider + Sonner Toaster
+lib/
+  apiClient.ts          # Axios instance with interceptors
+  queryClient.ts        # TanStack QueryClient config
+constants/
+  api.ts                # All API endpoint paths
+```
 
 ---
 
-🎉 Congratulations on working on this assignment! Utilize the _playground_ feature in Figma to help you understand how the design should look on various devices. Keep experimenting and don't hesitate to look for references if you encounter difficulties. You can definitely produce great work! 🚀 Keep up the spirit, cheers! 🎈
+## Scripts
+
+```bash
+npm run dev     # Start development server
+npm run build   # Production build
+npm run lint    # ESLint check
+```

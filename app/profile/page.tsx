@@ -35,7 +35,7 @@ function ProfileSkeleton() {
 
 function UpdateProfileModal({ onClose }: { onClose: () => void }) {
   const { data: profile } = useProfile();
-  const { mutate: update, isPending, isSuccess } = useUpdateProfile();
+  const { mutate: update, isPending } = useUpdateProfile();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);

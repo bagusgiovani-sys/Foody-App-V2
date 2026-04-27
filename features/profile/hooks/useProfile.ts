@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { profileService } from '../services';
 import type { UpdateProfilePayload } from '../types';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -40,6 +41,8 @@ export function useUpdateProfile() {
           token
         );
       }
+      toast.success('Profile updated!');
     },
+    onError: () => toast.error('Failed to update profile'),
   });
 }

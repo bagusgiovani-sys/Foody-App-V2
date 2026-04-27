@@ -6,10 +6,14 @@ export const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Lazy store access — avoids circular-dep at module init while keeping ESM imports
+function getAuthStore() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return (require('@/store/useAuthStore') as typeof import('@/store/useAuthStore')).useAuthStore;
+}
+
 apiClient.interceptors.request.use((config) => {
-  // Import lazily to avoid circular dependency at module init time
-  const { useAuthStore } = require('@/store/useAuthStore');
-  const token = useAuthStore.getState().token;
+  const token = getAuthStore().getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -22,8 +26,7 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       const protectedRoutes = ['/profile', '/cart', '/checkout', '/orders'];
       if (protectedRoutes.some((r) => window.location.pathname.startsWith(r))) {
-        const { useAuthStore } = require('@/store/useAuthStore');
-        useAuthStore.getState().clearAuth();
+        getAuthStore().getState().clearAuth();
         window.location.href = '/login';
       }
     }

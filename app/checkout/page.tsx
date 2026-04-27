@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { MapPin } from 'lucide-react';
-import Image from 'next/image';
 import MainLayout from '@/components/layout/MainLayout';
 import { useCart } from '@/features/cart/hooks/useCart';
 import { useCheckout } from '@/features/checkout/hooks/useCheckout';

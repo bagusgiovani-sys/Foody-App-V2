@@ -11,7 +11,7 @@ interface ReviewModalProps {
   onClose: () => void;
 }
 
-export default function ReviewModal({ transactionId, restaurantId, restaurantName, onClose }: ReviewModalProps) {
+export default function ReviewModal({ transactionId, restaurantId, onClose }: ReviewModalProps) {
   const [star, setStar] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState('');

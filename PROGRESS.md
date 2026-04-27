@@ -99,7 +99,15 @@
 - [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### Profile — `/profile`
-- [ ] Phase 1–9
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 2 — Swagger re-audit (GET + PUT /api/auth/profile confirmed)
+- [x] Phase 3 — Types (ApiProfile, UpdateProfilePayload)
+- [x] Phase 4 — No mapper needed
+- [x] Phase 5 — Static UI (info rows, avatar, skeleton, Update Profile button)
+- [x] Phase 6 — Server state (useProfile, useUpdateProfile with cache + Zustand sync)
+- [x] Phase 7 — Client state (UpdateProfileModal with RHF+Zod, avatar file upload preview)
+- [ ] Phase 8 — Tests (skipped for now)
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ## Cross-cutting work (do before or alongside pages)
 - [x] `store/useAuthStore.ts` — Zustand persisted auth (replaces Redux)

@@ -30,7 +30,7 @@ export function toReviewDetail(api: ApiReviewDetail): ReviewDetail {
 }
 
 export function toRestaurantDetail(api: ApiRestaurantDetail): RestaurantDetail {
-  const { star, menus, reviews, averageRating, coordinates, ...rest } = api;
+  const { star, menus, reviews, averageRating: _avg, coordinates: _coords, ...rest } = api;
   return {
     ...rest,
     rating: star,
