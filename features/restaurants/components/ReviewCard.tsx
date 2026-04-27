@@ -1,10 +1,10 @@
 'use client';
 
 import { Star } from 'lucide-react';
-import type { Review } from '../types';
+import type { ReviewDetail } from '../types';
 
 interface ReviewCardProps {
-  review: Review;
+  review: ReviewDetail;
 }
 
 export default function ReviewCard({ review }: ReviewCardProps) {
@@ -38,7 +38,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
             key={i}
-            className={`w-4 h-4 ${i < review.star ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'}`}
+            className={`w-4 h-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'}`}
           />
         ))}
       </div>

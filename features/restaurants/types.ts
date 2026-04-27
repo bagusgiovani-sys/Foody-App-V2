@@ -69,23 +69,75 @@ export interface RestaurantListData {
   pagination: ApiPagination;
 }
 
-// For restaurant detail page (will be expanded in that phase)
-export interface MenuItem {
+// --- Restaurant detail ---
+
+export interface ApiMenuItemDetail {
   id: number;
-  food_name: string;
+  foodName: string;
   price: number;
   type: string;
   image: string;
 }
 
-export interface Review {
+export interface ApiReviewDetail {
   id: number;
   star: number;
   comment: string;
   createdAt: string;
-  user: {
-    id: number;
-    name: string;
-    avatar: string;
-  };
+  user: { id: number; name: string; avatar: string };
+}
+
+export interface ApiRestaurantDetail {
+  id: number;
+  name: string;
+  star: number;
+  averageRating: number;
+  place: string;
+  coordinates: { lat: number; long: number };
+  distance?: number;
+  logo: string;
+  images: string[];
+  category: string | null;
+  totalMenus: number;
+  totalReviews: number;
+  menus: ApiMenuItemDetail[];
+  reviews: ApiReviewDetail[];
+}
+
+export interface ApiRestaurantDetailResponse {
+  success: boolean;
+  message: string;
+  data: ApiRestaurantDetail;
+}
+
+// View models for detail page
+export interface MenuItemDetail {
+  id: number;
+  name: string;         // mapped from foodName
+  price: number;
+  type: 'food' | 'drink';
+  image: string;
+}
+
+export interface ReviewDetail {
+  id: number;
+  rating: number;       // mapped from star
+  comment: string;
+  createdAt: string;
+  user: { id: number; name: string; avatar: string };
+}
+
+export interface RestaurantDetail {
+  id: number;
+  name: string;
+  rating: number;       // mapped from star
+  place: string;
+  logo: string;
+  images: string[];
+  category: string | null;
+  totalMenus: number;
+  totalReviews: number;
+  distance?: number;
+  menus: MenuItemDetail[];
+  reviews: ReviewDetail[];
 }
