@@ -37,7 +37,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left — food image (desktop only) */}
       <div
         className="hidden lg:block lg:w-1/2 bg-cover bg-center"
         style={{ backgroundImage: "url('/assets/food-hero.jpg')" }}
@@ -46,7 +45,6 @@ export default function LoginPage() {
         <div className="w-full h-full bg-gradient-to-br from-amber-900/60 to-stone-900/80" />
       </div>
 
-      {/* Right — form panel */}
       <div className="flex-1 min-h-screen bg-[#3c3c3c] lg:bg-white flex items-center justify-center p-6 lg:p-16">
         <div className="w-full max-w-sm bg-white rounded-2xl p-8 lg:rounded-none lg:p-0">
           <AuthHeader />
@@ -64,6 +62,7 @@ export default function LoginPage() {
                 {...register('email')}
                 type="email"
                 placeholder="Email"
+                aria-label="Email"
                 autoComplete="email"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
@@ -80,6 +79,7 @@ export default function LoginPage() {
                   {...register('password')}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password"
+                  aria-label="Password"
                   autoComplete="current-password"
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? 'password-error' : undefined}
@@ -112,6 +112,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isPending}
+              aria-busy={isPending}
               className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-semibold rounded-full transition-colors"
             >
               {isPending ? 'Logging in...' : 'Login'}
