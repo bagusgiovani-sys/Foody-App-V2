@@ -6,6 +6,7 @@ export interface Profile {
   email: string;
   phone?: string;
   image?: string;
+  avatar?: string;
   UserCode?: string;
   DateCreate?: string;
   DateCode?: string;

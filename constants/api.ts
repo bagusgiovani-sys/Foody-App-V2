@@ -23,8 +23,8 @@ export const API_ENDPOINTS = {
 
   // Orders
   ORDERS: {
-    CHECKOUT: "/api/orders/checkout",
-    MY_ORDERS: "/api/orders/my-order",
+    CHECKOUT: "/api/order/checkout",
+    MY_ORDERS: "/api/order/my-order",
   },
 
   // Restaurants
@@ -39,11 +39,9 @@ export const API_ENDPOINTS = {
 
   // Reviews
   REVIEWS: {
-    CREATE: "/api/reviews",
-    MY_REVIEWS: "/api/reviews/my-reviews",
+    CREATE: "/api/review",
+    MY_REVIEWS: "/api/review/my-reviews",
     BY_RESTAURANT: (restaurantId: string) =>
-      `/api/reviews/restaurant/${restaurantId}`,
-    UPDATE: (id: string) => `/api/reviews/${id}`,
-    DELETE: (id: string) => `/api/reviews/${id}`,
+      `/api/review/restaurant/${restaurantId}`,
   },
 };

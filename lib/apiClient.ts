@@ -1,47 +1,30 @@
-// 📄 FILE: lib/apiClient.ts
-
 import axios from 'axios';
 import { API_BASE_URL } from '@/constants/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor - Add token to every request
-apiClient.interceptors.request.use(
-  (config) => {
-    // Only access localStorage on client side
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+apiClient.interceptors.request.use((config) => {
+  // Import lazily to avoid circular dependency at module init time
+  const { useAuthStore } = require('@/store/useAuthStore');
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
-// Response interceptor - Handle errors globally
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid - clear it but DON'T redirect
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        // Only redirect if we're on a protected route (profile, cart, checkout)
-        const protectedRoutes = ['/profile', '/cart', '/checkout'];
-        const currentPath = window.location.pathname;
-        
-        if (protectedRoutes.some(route => currentPath.startsWith(route))) {
-          window.location.href = '/login';
-        }
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      const protectedRoutes = ['/profile', '/cart', '/checkout', '/orders'];
+      if (protectedRoutes.some((r) => window.location.pathname.startsWith(r))) {
+        const { useAuthStore } = require('@/store/useAuthStore');
+        useAuthStore.getState().clearAuth();
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);

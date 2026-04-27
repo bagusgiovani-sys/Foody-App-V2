@@ -1,13 +1,10 @@
-// store/index.ts
-
 import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from '@/features/cart/store';
-import authReducer from '@/features/auth/authSlice';
 
+// Cart still uses Redux temporarily — will be replaced with TanStack Query in the cart phase
 export const store = configureStore({
   reducer: {
     cart: cartReducer,
-    auth: authReducer,
   },
 });
 

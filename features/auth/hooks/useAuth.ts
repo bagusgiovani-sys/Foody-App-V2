@@ -1,44 +1,44 @@
-// 📄 FILE: features/auth/hooks/useAuth.ts
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { register, login, logout, clearError, getProfile } from '../authSlice';
-import type { RegisterRequest, LoginRequest } from '../types';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import { authService } from '../services';
+import type { LoginRequest, RegisterRequest } from '../types';
 
-export const useAuth = () => {
-  const dispatch = useAppDispatch();
-  const { user, isAuthenticated, loading, error } = useAppSelector((state) => state.auth);
-
-  const handleRegister = async (data: RegisterRequest) => {
-    const result = await dispatch(register(data));
-    return result;
-  };
-
-  const handleLogin = async (data: LoginRequest) => {
-    const result = await dispatch(login(data));
-    return result;
-  };
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
-
-  const handleGetProfile = async () => {
-    const result = await dispatch(getProfile());
-    return result;
-  };
-
-  const handleClearError = () => {
-    dispatch(clearError());
-  };
-
+// Convenience hook for reading auth state — used by pages that haven't been rebuilt yet
+export function useAuth() {
+  const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   return {
     user,
-    isAuthenticated,
-    loading,
-    error,
-    register: handleRegister,
-    login: handleLogin,
-    logout: handleLogout,
-    getProfile: handleGetProfile,
-    clearError: handleClearError,
+    token,
+    isAuthenticated: !!token,
+    logout: clearAuth,
   };
-};
+}
+
+export function useLogin() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: LoginRequest) => authService.login(data),
+    onSuccess: (res) => {
+      setAuth(res.data.user, res.data.token);
+      router.push('/');
+    },
+  });
+}
+
+export function useRegister() {
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: RegisterRequest) => authService.register(data),
+    onSuccess: (res) => {
+      setAuth(res.data.user, res.data.token);
+      router.push('/');
+    },
+  });
+}
