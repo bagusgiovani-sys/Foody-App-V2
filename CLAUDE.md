@@ -13,6 +13,14 @@ Read `./SPEC.md` first — it defines scope, stack, and success criteria. Everyt
 - **API base URL**: https://be-restaurant-production.up.railway.app
 - **Swagger UI** (human reference only, never for code): https://be-restaurant-production.up.railway.app/api-swagger/
 
+## Git Workflow
+- After completing any major change (finishing a phase, completing a page, significant refactor), automatically review the diff, write a descriptive conventional-commit message, commit, and push to the remote branch — without waiting for explicit confirmation from the user.
+- Stage only project source files. Never commit `.claude/`, `.playwright-mcp/`, or other tooling artifacts.
+- One logical change per commit. Split unrelated changes into separate commits.
+
+## Session Recaps
+- When asked for a recap, summarize: (1) completed work, (2) in-progress tasks, (3) exact next step — in a concise bulleted format before continuing with new actions.
+
 ---
 
 ## Phase 0 — Discovery (do this ONCE before any code)
