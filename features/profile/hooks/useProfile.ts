@@ -1,33 +1,45 @@
-// 📄 FILE: features/profile/hooks/useProfile.ts
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { profileService } from '../services';
+import type { UpdateProfilePayload } from '../types';
+import { useAuthStore } from '@/store/useAuthStore';
 
-import { useState, useEffect } from 'react';
-import { getProfile } from '../services';
-import type { Profile } from '../types';
+export const PROFILE_QUERY_KEY = ['profile'] as const;
 
 export function useProfile() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        // TODO: Get user token from Redux/localStorage
-        // const token = localStorage.getItem('token');
-        const data = await getProfile();
-        setProfile(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch profile');
-        console.error('Error fetching profile:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  return { profile, isLoading, error };
+  const isLoggedIn = !!useAuthStore((s) => s.token);
+  return useQuery({
+    queryKey: PROFILE_QUERY_KEY,
+    queryFn: () => profileService.getProfile(),
+    staleTime: 60_000,
+    enabled: isLoggedIn,
+  });
 }
 
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const token = useAuthStore((s) => s.token);
+
+  return useMutation({
+    mutationFn: (payload: UpdateProfilePayload) => profileService.updateProfile(payload),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(PROFILE_QUERY_KEY, updated);
+      // Keep auth store user in sync
+      if (token) {
+        setAuth(
+          {
+            id: updated.id,
+            name: updated.name,
+            email: updated.email,
+            phone: updated.phone ?? '',
+            avatar: updated.avatar ?? '',
+            latitude: updated.latitude ?? 0,
+            longitude: updated.longitude ?? 0,
+            createdAt: updated.createdAt,
+          },
+          token
+        );
+      }
+    },
+  });
+}

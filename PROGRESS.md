@@ -88,7 +88,15 @@
 - [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### My Orders — `/orders`
-- [ ] Phase 1–9
+- [x] Phase 1 — Figma re-inspect
+- [x] Phase 2 — Swagger re-audit (GET /api/order/my-order, POST /api/review confirmed)
+- [x] Phase 3 — Types (ApiOrder, OrderStatus, ReviewPayload)
+- [x] Phase 4 — No mapper needed
+- [x] Phase 5 — Static UI (order card, review modal, sidebar, skeleton/empty/error)
+- [x] Phase 6 — Server state (useMyOrders by status, useCreateReview mutation)
+- [x] Phase 7 — Client state (status tabs refetch server-side, search client-side)
+- [ ] Phase 8 — Tests (skipped for now)
+- [ ] Phase 9 — Polish (a11y, Lighthouse)
 
 ### Profile — `/profile`
 - [ ] Phase 1–9

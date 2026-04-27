@@ -2,10 +2,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { Profile } from '../types';
+import type { ApiProfile } from '../types';
 
 interface ProfileContentProps {
-  profile: Profile | null;
+  profile: ApiProfile | null;
 }
 
 export default function ProfileContent({ profile }: ProfileContentProps) {
@@ -35,7 +35,7 @@ export default function ProfileContent({ profile }: ProfileContentProps) {
         {/* Profile Image */}
         <div className="flex justify-center mb-6">
           <img 
-            src={profile.image || 'https://i.pravatar.cc/150?img=12'} 
+            src={profile.avatar || 'https://i.pravatar.cc/150?img=12'} 
             alt={profile.name} 
             className="w-24 h-24 rounded-full object-cover"
           />

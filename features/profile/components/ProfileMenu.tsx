@@ -4,12 +4,12 @@
 import React from 'react';
 import { MapPin, FileText, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import type { Profile } from '../types';
+import type { ApiProfile } from '../types';
 
 interface ProfileMenuProps {
   activeMenu: string;
   onMenuChange: (menuId: string) => void;
-  profile: Profile | null;
+  profile: ApiProfile | null;
 }
 
 export default function ProfileMenu({ activeMenu, onMenuChange, profile }: ProfileMenuProps) {
