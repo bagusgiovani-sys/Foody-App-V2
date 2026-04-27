@@ -1,65 +1,64 @@
-// 📄 FILE: features/cart/components/CartItem.tsx
 'use client';
 
-import React from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
+import { useUpdateCartItem, useRemoveCartItem } from '../hooks/useCartMutation';
+import type { CartItem as CartItemType } from '../types';
 
 interface CartItemProps {
-  item: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image?: string;
-  };
+  item: CartItemType;
 }
 
 export default function CartItem({ item }: CartItemProps) {
+  const { mutate: update, isPending: isUpdating } = useUpdateCartItem();
+  const { mutate: remove, isPending: isRemoving } = useRemoveCartItem();
+  const isPending = isUpdating || isRemoving;
+
   const handleDecrease = () => {
-    // TODO: Implement decrease quantity logic
-    console.log('Decrease quantity for item:', item.id);
+    if (item.quantity <= 1) {
+      remove(item.id);
+    } else {
+      update({ id: item.id, quantity: item.quantity - 1 });
+    }
   };
 
   const handleIncrease = () => {
-    // TODO: Implement increase quantity logic
-    console.log('Increase quantity for item:', item.id);
+    update({ id: item.id, quantity: item.quantity + 1 });
   };
 
   return (
-    <div className="flex items-center gap-4">
-      {/* Food Image */}
-      <div className="w-16 h-16 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden">
-        {item.image ? (
-          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+    <div className={`flex items-center gap-4 transition-opacity ${isPending ? 'opacity-50' : 'opacity-100'}`}>
+      <div className="w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden bg-gray-100">
+        {item.menu.image ? (
+          <img src={item.menu.image} alt={item.menu.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900" />
+          <div className="w-full h-full bg-gray-200" />
         )}
       </div>
 
-      {/* Food Info */}
-      <div className="flex-1">
-        <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
-        <p className="text-lg font-bold text-gray-900">
-          Rp{item.price.toLocaleString('id-ID')}
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-gray-900 truncate">{item.menu.name}</h3>
+        <p className="text-base font-bold text-gray-900">
+          Rp{item.menu.price.toLocaleString('id-ID')}
         </p>
       </div>
 
-      {/* Quantity Controls */}
-      <div className="flex items-center gap-3">
-        <button 
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
           onClick={handleDecrease}
-          className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
+          disabled={isPending}
+          aria-label={item.quantity <= 1 ? 'Remove item' : 'Decrease quantity'}
+          className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center transition"
         >
-          <Minus className="w-4 h-4 text-gray-700" />
+          {item.quantity <= 1 ? <Trash2 className="w-3.5 h-3.5 text-red-500" /> : <Minus className="w-3.5 h-3.5 text-gray-700" />}
         </button>
-        <span className="w-8 text-center font-medium text-gray-900">
-          {item.quantity}
-        </span>
-        <button 
+        <span className="w-6 text-center font-semibold text-sm">{item.quantity}</span>
+        <button
           onClick={handleIncrease}
-          className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-700 transition"
+          disabled={isPending}
+          aria-label="Increase quantity"
+          className="w-8 h-8 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white flex items-center justify-center transition"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

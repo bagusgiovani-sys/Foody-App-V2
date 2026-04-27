@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingCart, MapPin, ClipboardList, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useCart } from '@/features/cart/hooks/useCart';
 import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
@@ -16,6 +17,8 @@ export default function Navbar() {
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = !!useAuthStore((s) => s.token);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+  const { data: cart } = useCart();
+  const cartCount = cart?.summary.totalItems ?? 0;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -71,10 +74,15 @@ export default function Navbar() {
               <>
                 <Link
                   href="/cart"
-                  aria-label="Cart"
+                  aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`}
                   className={`relative p-2.5 rounded-full transition ${hoverBg}`}
                 >
                   <ShoppingCart className={`w-6 h-6 ${isScrolled ? 'text-gray-900' : 'text-white'}`} />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {cartCount > 99 ? '99+' : cartCount}
+                    </span>
+                  )}
                 </Link>
 
                 {/* Profile button + dropdown */}

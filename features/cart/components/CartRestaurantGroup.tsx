@@ -1,62 +1,62 @@
-// 📄 FILE: features/cart/components/CartRestaurantGroup.tsx
 'use client';
 
-import React from 'react';
+import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import CartItem from './CartItem';
-
-interface CartItemType {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-}
-
-interface CartGroup {
-  id: string;
-  restaurantName: string;
-  restaurantLogo: string;
-  items: CartItemType[];
-}
+import type { CartGroup } from '../types';
 
 interface CartRestaurantGroupProps {
   group: CartGroup;
+  onCheckout: (restaurantId: number) => void;
 }
 
-export default function CartRestaurantGroup({ group }: CartRestaurantGroupProps) {
-  // Calculate total for this restaurant
-  const total = group.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+function formatPrice(n: number) {
+  return `Rp${n.toLocaleString('id-ID')}`;
+}
 
+export default function CartRestaurantGroup({ group, onCheckout }: CartRestaurantGroupProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
-      {/* Restaurant Header */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-          <div className="w-6 h-6 bg-orange-500 rounded" />
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      {/* Restaurant header */}
+      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
+        <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+          {group.restaurant.logo ? (
+            <img src={group.restaurant.logo} alt={group.restaurant.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gray-200" />
+          )}
         </div>
-        <h2 className="text-lg font-bold text-gray-900">{group.restaurantName}</h2>
-        <button className="ml-auto text-gray-400 hover:text-gray-600 transition">
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        <Link
+          href={`/restaurants/${group.restaurant.id}`}
+          className="flex-1 font-bold text-gray-900 hover:text-red-600 transition"
+        >
+          {group.restaurant.name}
+        </Link>
+        <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
       </div>
 
-      {/* Cart Items */}
-      <div className="space-y-4 mb-6">
-        {group.items.map((item) => (
-          <CartItem key={item.id} item={item} />
+      {/* Items */}
+      <div className="px-6 py-4 space-y-4">
+        {group.items.map((item, idx) => (
+          <div key={item.id}>
+            <CartItem item={item} />
+            {idx < group.items.length - 1 && (
+              <div className="mt-4 border-t border-dashed border-gray-200" />
+            )}
+          </div>
         ))}
       </div>
 
-      {/* Total & Checkout */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+      {/* Footer: subtotal + checkout */}
+      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-gray-600 mb-1">Total</p>
-          <p className="text-2xl font-bold text-gray-900">
-            Rp{total.toLocaleString('id-ID')}
-          </p>
+          <p className="text-xs text-gray-500 mb-0.5">Subtotal</p>
+          <p className="text-xl font-bold text-gray-900">{formatPrice(group.subtotal)}</p>
         </div>
-        <button className="px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition">
+        <button
+          onClick={() => onCheckout(group.restaurant.id)}
+          className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition"
+        >
           Checkout
         </button>
       </div>
